@@ -1,0 +1,49 @@
+---
+description: Core coding and API standards for the Google Docs parser service
+alwaysApply: true
+---
+
+# Project Standards
+
+## Runtime and Style
+
+- Use **Node.js 14-compatible** JavaScript only. Avoid newer syntax that Node 14 does not support (e.g. `??=`, top-level `await`).
+- Use **CommonJS** modules (`require`, `module.exports`), not ES modules.
+- Prefer **async/await** over raw Promises, and always handle rejections.
+- Keep functions small and focused; extract helpers instead of nesting large blocks.
+
+## Error Handling
+
+- Throw and propagate **Error** instances with clear, user-facing messages.
+- Map domain errors to appropriate HTTP status codes in `server.js` (e.g. 400 for bad input, 403 for unauthorized Google Docs, 404 for not found, 500 for unexpected failures).
+- Do not leak stack traces or internal details in HTTP responses; log them instead once a logger is added.
+
+## HTTP and API Design
+
+- All new endpoints MUST:
+  - Accept and return **JSON**.
+  - Validate request bodies and respond with **400** on invalid input.
+  - Return a consistent error shape: `{ "error": "Human-readable message" }`.
+- Keep endpoint handlers thin; put core logic into separate modules under `src/`.
+
+## File and Temp Handling
+
+- When writing temp files:
+  - Use **per-request temp directories** (e.g. `fs.mkdtempSync(path.join(os.tmpdir(), 'gdoc-parser-'))`).
+  - Always clean up temp files and directories in a `finally` block, best-effort.
+- Never write outside the project or OS temp directories without a clear reason.
+
+## HTML Parsing and Extraction
+
+- Use **cheerio** for DOM traversal; avoid brittle string parsing of HTML.
+- When adding or modifying extraction rules:
+  - Keep behavior deterministic and document it in `README.md`.
+  - Be conservative when treating elements as labels; match keyword text exactly (case/whitespace-insensitive) and ensure there is no trailing content or colon.
+  - For list and table values, prefer stable, predictable joining formats (e.g. ` | ` between items/cells).
+
+## Dependencies
+
+- Prefer small, well-maintained libraries; avoid adding heavy dependencies for simple tasks.
+- Keep versions **Node 14-friendly**; if bumping versions, confirm they do not rely on unsupported syntax.
+- Do not introduce global mutable state inside shared modules unless strictly necessary.
+
