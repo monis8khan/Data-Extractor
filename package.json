@@ -1,0 +1,19 @@
+{
+  "name": "google-doc-parser-service",
+  "version": "1.0.0",
+  "description": "Node.js 14 service to download Google Docs as DOCX, convert to HTML, and extract structured data.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "engines": {
+    "node": "14.x"
+  },
+  "dependencies": {
+    "axios": "^0.21.4",
+    "body-parser": "^1.19.0",
+    "cheerio": "^0.22.0",
+    "express": "^4.18.2",
+    "mammoth": "^1.6.0"
+  }
+}
